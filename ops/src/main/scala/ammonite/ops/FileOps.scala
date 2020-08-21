@@ -143,6 +143,6 @@ object cp extends Function2[Path, Path, Unit] with CopyMove{
  */
 case class kill(signal: Int)(implicit wd: Path) extends Function1[Int, CommandResult]{
   def apply(pid: Int): CommandResult = {
-    Shellout.%%('kill, "-" + signal, pid.toString)
+    Shellout.%%("kill", "-" + signal, pid.toString)
   }
 }
