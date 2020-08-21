@@ -4,6 +4,8 @@ import $file.ci.upload
 
 import $ivy.`io.get-coursier::coursier-launcher:2.0.0-RC6-10`
 
+val dottyVersion = Option(sys.props("dottyVersion"))
+
 val isMasterCommit =
   sys.env.get("TRAVIS_PULL_REQUEST") == Some("false") &&
   (sys.env.get("TRAVIS_BRANCH") == Some("master") || sys.env("TRAVIS_TAG") != "")
@@ -38,15 +40,18 @@ val (buildVersion, unstable) = sys.env.get("TRAVIS_TAG") match{
 }
 
 val bspVersion = "2.0.0-M6"
-
 trait AmmInternalModule extends mill.scalalib.CrossSbtModule{
   def artifactName = "ammonite-" + millOuterCtx.segments.parts.mkString("-").stripPrefix("amm-")
   def testFramework = "utest.runner.Framework"
   def scalacOptions = Seq("-P:acyclic:force")
-  def compileIvyDeps = Agg(ivy"com.lihaoyi::acyclic:0.2.0")
-  def scalacPluginIvyDeps = Agg(ivy"com.lihaoyi::acyclic:0.2.0")
+  def compileIvyDeps =
+    if (crossScalaVersion.startsWith("2")) Agg(ivy"com.lihaoyi::acyclic:0.2.0")
+    else Agg.empty[mill.scalalib.Dep]
+  def scalacPluginIvyDeps =
+    if (crossScalaVersion.startsWith("2")) Agg(ivy"com.lihaoyi::acyclic:0.2.0")
+    else Agg.empty[mill.scalalib.Dep]
   trait Tests extends super.Tests{
-    def ivyDeps = Agg(ivy"com.lihaoyi::utest:0.7.3")
+    def ivyDeps = Agg(ivy"com.lihaoyi::utest:0.7.4")
     def testFrameworks = Seq("utest.runner.Framework")
     def forkArgs = Seq("-Xmx2g", "-Dfile.encoding=UTF8")
   }
@@ -138,13 +143,23 @@ trait AmmDependenciesResourceFileModule extends JavaModule{
   }
 }
 
-object ops extends Cross[OpsModule](binCrossScalaVersions:_*)
+object ops extends Cross[OpsModule]((binCrossScalaVersions ++ dottyVersion):_*)
 class OpsModule(val crossScalaVersion: String) extends AmmModule{
-  def ivyDeps = Agg(
-    ivy"com.lihaoyi::os-lib:0.7.1",
-    ivy"org.scala-lang.modules::scala-collection-compat:2.1.2"
+  def ivyDeps = Agg(ivy"com.lihaoyi::os-lib:0.7.1") ++ (
+    if (crossScalaVersion.startsWith("2")) Agg(ivy"org.scala-lang.modules::scala-collection-compat:2.1.2")
+    else Agg(ivy"org.scala-lang.modules:scala-collection-compat_2.13:2.1.2")
   )
-  def scalacOptions = super.scalacOptions().filter(!_.contains("acyclic"))
+
+  def scalacOptions = T {
+    val res = super.scalacOptions().filter(!_.contains("acyclic"))
+    if (crossScalaVersion.startsWith("0"))
+      res ++ Seq(
+        "-source:3.0-migration",
+        "-explain",
+        "-rewrite",
+        "-language:implicitConversions")
+    else res
+  }
   object test extends Tests
 }
 
