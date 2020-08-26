@@ -9,133 +9,133 @@ import utest._
 object OpTests extends TestSuite{
 
   val tests = Tests {
-    val res = pwd/'ops/'src/'test/'resources/'testdata
+    val res = pwd/Symbol("ops")/Symbol("src")/Symbol("test")/Symbol("resources")/Symbol("testdata")
     test("ls") - assert(
-      ls(res).toSet == Set(res/'folder1, res/'folder2, res/"File.txt"),
-      ls(res/'folder2).toSet == Set(
-        res/'folder2/'folder2a,
-        res/'folder2/'folder2b
+      ls(res).toSet == Set(res/Symbol("folder1"), res/Symbol("folder2"), res/"File.txt"),
+      ls(res/Symbol("folder2")).toSet == Set(
+        res/Symbol("folder2")/Symbol("folder2a"),
+        res/Symbol("folder2")/Symbol("folder2b")
       )
 
 //      ls(res/'folder2/'folder2b) == Seq()
     )
     test("lsR"){
       ls.rec(res).foreach(println)
-      intercept[java.nio.file.NoSuchFileException](ls.rec(pwd/'target/'nonexistent))
+      intercept[java.nio.file.NoSuchFileException](ls.rec(pwd/Symbol("target")/Symbol("nonexistent")))
       assert(
-        ls.rec(res/'folder2/'folder2b) == Seq(res/'folder2/'folder2b/"b.txt"),
-        ls.rec(res/'folder2) == Seq(
-          res/'folder2/'folder2a,
-          res/'folder2/'folder2b,
-          res/'folder2/'folder2a/"I am.txt",
-          res/'folder2/'folder2b/"b.txt"
+        ls.rec(res/Symbol("folder2")/Symbol("folder2b")) == Seq(res/Symbol("folder2")/Symbol("folder2b")/"b.txt"),
+        ls.rec(res/Symbol("folder2")) == Seq(
+          res/Symbol("folder2")/Symbol("folder2a"),
+          res/Symbol("folder2")/Symbol("folder2b"),
+          res/Symbol("folder2")/Symbol("folder2a")/"I am.txt",
+          res/Symbol("folder2")/Symbol("folder2b")/"b.txt"
         ),
         ls.rec(res) == Seq(
           res/"File.txt",
-          res/'folder1,
-          res/'folder2,
-          res/'folder1/"Yoghurt Curds Cream Cheese.txt",
-          res/'folder2/'folder2a,
-          res/'folder2/'folder2b,
-          res/'folder2/'folder2a/"I am.txt",
-          res/'folder2/'folder2b/"b.txt"
+          res/Symbol("folder1"),
+          res/Symbol("folder2"),
+          res/Symbol("folder1")/"Yoghurt Curds Cream Cheese.txt",
+          res/Symbol("folder2")/Symbol("folder2a"),
+          res/Symbol("folder2")/Symbol("folder2b"),
+          res/Symbol("folder2")/Symbol("folder2a")/"I am.txt",
+          res/Symbol("folder2")/Symbol("folder2b")/"b.txt"
         )
       )
     }
     test("lsRecPermissions"){
       if(Unix()){
-        assert(ls.rec(root/'var/'run).nonEmpty)
+        assert(ls.rec(root/Symbol("var")/Symbol("run")).nonEmpty)
       }
     }
     test("readResource"){
       test("positive"){
         test("absolute"){
-          val contents = read(resource/'test/'ammonite/'ops/'folder/"file.txt")
+          val contents = read(resource/Symbol("test")/Symbol("ammonite")/Symbol("ops")/Symbol("folder")/"file.txt")
           assert(contents.contains("file contents lols"))
 
           val cl = getClass.getClassLoader
-          val contents2 = read(resource(cl)/'test/'ammonite/'ops/'folder/"file.txt")
+          val contents2 = read(resource(cl)/Symbol("test")/Symbol("ammonite")/Symbol("ops")/Symbol("folder")/"file.txt")
           assert(contents2.contains("file contents lols"))
         }
 
         test("relative"){
           val cls = classOf[_root_.test.ammonite.ops.Testing]
-          val contents = read! resource(cls)/'folder/"file.txt"
+          val contents = read! resource(cls)/Symbol("folder")/"file.txt"
           assert(contents.contains("file contents lols"))
 
-          val contents2 = read! resource(getClass)/'folder/"file.txt"
+          val contents2 = read! resource(getClass)/Symbol("folder")/"file.txt"
           assert(contents2.contains("file contents lols"))
         }
       }
       test("negative"){
         test - intercept[ResourceNotFoundException]{
-          read(resource/'folder/"file.txt")
+          read(resource/Symbol("folder")/"file.txt")
         }
 
         test - intercept[ResourceNotFoundException]{
           val cls = classOf[_root_.test.ammonite.ops.Testing]
           read(
-            resource(cls)/'test/'ammonite/'ops/'folder/"file.txt"
+            resource(cls)/Symbol("test")/Symbol("ammonite")/Symbol("ops")/Symbol("folder")/"file.txt"
           )
         }
         test - intercept[ResourceNotFoundException]{
-          read(resource(getClass)/'test/'ammonite/'ops/'folder/"file.txt")
+          read(resource(getClass)/Symbol("test")/Symbol("ammonite")/Symbol("ops")/Symbol("folder")/"file.txt")
         }
         test - intercept[ResourceNotFoundException]{
-          read(resource(getClass.getClassLoader)/'folder/"file.txt")
+          read(resource(getClass.getClassLoader)/Symbol("folder")/"file.txt")
         }
       }
     }
     test("rm"){
       // shouldn't crash
-      rm! pwd/'target/'nonexistent
+      rm! pwd/Symbol("target")/Symbol("nonexistent")
     }
     test("Mutating"){
-      val testPath = pwd/'target/'test
+      val testPath = pwd/Symbol("target")/Symbol("test")
       rm! testPath
       mkdir! testPath
       test("cp"){
-        val d = testPath/'copying
+        val d = testPath/Symbol("copying")
         test("basic"){
           assert(
-            !exists(d/'folder),
-            !exists(d/'file)
+            !exists(d/Symbol("folder")),
+            !exists(d/Symbol("file"))
           )
-          mkdir! d/'folder
-          write(d/'file, "omg")
+          mkdir! d/Symbol("folder")
+          write(d/Symbol("file"), "omg")
           assert(
-            exists(d/'folder),
-            exists(d/'file),
-            read(d/'file) == "omg"
+            exists(d/Symbol("folder")),
+            exists(d/Symbol("file")),
+            read(d/Symbol("file")) == "omg"
           )
-          cp(d/'folder, d/'folder2)
-          cp(d/'file, d/'file2)
+          cp(d/Symbol("folder"), d/Symbol("folder2"))
+          cp(d/Symbol("file"), d/Symbol("file2"))
 
           assert(
-            exists(d/'folder),
-            exists(d/'file),
-            read(d/'file) == "omg",
-            exists(d/'folder2),
-            exists(d/'file2),
-            read(d/'file2) == "omg"
+            exists(d/Symbol("folder")),
+            exists(d/Symbol("file")),
+            read(d/Symbol("file")) == "omg",
+            exists(d/Symbol("folder2")),
+            exists(d/Symbol("file2")),
+            read(d/Symbol("file2")) == "omg"
           )
         }
         test("deep"){
-          write(d/'folderA/'folderB/'file, "Cow", createFolders = true)
-          cp(d/'folderA, d/'folderC)
-          assert(read(d/'folderC/'folderB/'file) == "Cow")
+          write(d/Symbol("folderA")/Symbol("folderB")/Symbol("file"), "Cow", createFolders = true)
+          cp(d/Symbol("folderA"), d/Symbol("folderC"))
+          assert(read(d/Symbol("folderC")/Symbol("folderB")/Symbol("file")) == "Cow")
         }
       }
       test("mv"){
         test("basic"){
-          val d = testPath/'moving
-          mkdir! d/'folder
-          assert(ls(d) == Seq(d/'folder))
-          mv(d/'folder, d/'folder2)
-          assert(ls(d) == Seq(d/'folder2))
+          val d = testPath/Symbol("moving")
+          mkdir! d/Symbol("folder")
+          assert(ls(d) == Seq(d/Symbol("folder")))
+          mv(d/Symbol("folder"), d/Symbol("folder2"))
+          assert(ls(d) == Seq(d/Symbol("folder2")))
         }
         test("shallow"){
-          val d = testPath/'moving2
+          val d = testPath/Symbol("moving2")
           mkdir(d)
           write(d/"A.scala", "AScala")
           write(d/"B.scala", "BScala")
@@ -157,24 +157,24 @@ object OpTests extends TestSuite{
           }
         }
         test("deep"){
-          val d = testPath/'moving2
+          val d = testPath/Symbol("moving2")
           mkdir(d)
-          mkdir(d/'scala)
-          mkdir(d/'py)
-          write(d/'scala/'A, "AScala")
-          write(d/'scala/'B, "BScala")
-          write(d/'py/'A, "APy")
-          write(d/'py/'B, "BPy")
+          mkdir(d/Symbol("scala"))
+          mkdir(d/Symbol("py"))
+          write(d/Symbol("scala")/Symbol("A"), "AScala")
+          write(d/Symbol("scala")/Symbol("B"), "BScala")
+          write(d/Symbol("py")/Symbol("A"), "APy")
+          write(d/Symbol("py")/Symbol("B"), "BPy")
           test("partialMoves"){
             ls.rec! d | mv*{case d/"py"/x => d/x }
             assert(
               ls.rec(d).toSet == Set(
-                d/'py,
-                d/'scala,
-                d/'scala/'A,
-                d/'scala/'B,
-                d/'A,
-                d/'B
+                d/Symbol("py"),
+                d/Symbol("scala"),
+                d/Symbol("scala")/Symbol("A"),
+                d/Symbol("scala")/Symbol("B"),
+                d/Symbol("A"),
+                d/Symbol("B")
               )
             )
           }
@@ -183,21 +183,21 @@ object OpTests extends TestSuite{
             intercept[MatchError]{ die }
 
             ls.rec! d |? (_.isFile) | mv.all*{
-              case d/"py"/x => d/'scala/'py/x
-              case d/"scala"/x => d/'py/'scala/x
+              case d/"py"/x => d/Symbol("scala")/Symbol("py")/x
+              case d/"scala"/x => d/Symbol("py")/Symbol("scala")/x
               case d => println("NOT FOUND " + d); d
             }
 
             assert(
               ls.rec(d).toSet == Set(
-                d/'py,
-                d/'scala,
-                d/'py/'scala,
-                d/'scala/'py,
-                d/'scala/'py/'A,
-                d/'scala/'py/'B,
-                d/'py/'scala/'A,
-                d/'py/'scala/'B
+                d/Symbol("py"),
+                d/Symbol("scala"),
+                d/Symbol("py")/Symbol("scala"),
+                d/Symbol("scala")/Symbol("py"),
+                d/Symbol("scala")/Symbol("py")/Symbol("A"),
+                d/Symbol("scala")/Symbol("py")/Symbol("B"),
+                d/Symbol("py")/Symbol("scala")/Symbol("A"),
+                d/Symbol("py")/Symbol("scala")/Symbol("B")
               )
             )
           }
@@ -206,44 +206,44 @@ object OpTests extends TestSuite{
       }
       test("mkdirRm"){
         test("singleFolder"){
-          val single = testPath/'single
-          mkdir! single/'inner
-          assert(ls(single) == Seq(single/'inner))
-          rm! single/'inner
+          val single = testPath/Symbol("single")
+          mkdir! single/Symbol("inner")
+          assert(ls(single) == Seq(single/Symbol("inner")))
+          rm! single/Symbol("inner")
           assert(ls(single) == Seq())
         }
         test("nestedFolders"){
-          val nested = testPath/'nested
-          mkdir! nested/'inner/'innerer/'innerest
+          val nested = testPath/Symbol("nested")
+          mkdir! nested/Symbol("inner")/Symbol("innerer")/Symbol("innerest")
           assert(
-            ls(nested) == Seq(nested/'inner),
-            ls(nested/'inner) == Seq(nested/'inner/'innerer),
-            ls(nested/'inner/'innerer) == Seq(nested/'inner/'innerer/'innerest)
+            ls(nested) == Seq(nested/Symbol("inner")),
+            ls(nested/Symbol("inner")) == Seq(nested/Symbol("inner")/Symbol("innerer")),
+            ls(nested/Symbol("inner")/Symbol("innerer")) == Seq(nested/Symbol("inner")/Symbol("innerer")/Symbol("innerest"))
           )
-          rm! nested/'inner
+          rm! nested/Symbol("inner")
           assert(ls(nested) == Seq())
         }
       }
       test("readWrite"){
-        val d = testPath/'readWrite
+        val d = testPath/Symbol("readWrite")
         mkdir! d
         test("simple"){
-          write(d/'file, "i am a cow")
-          assert(read(d/'file) == "i am a cow")
+          write(d/Symbol("file"), "i am a cow")
+          assert(read(d/Symbol("file")) == "i am a cow")
         }
         test("autoMkdir"){
-          write(d/'folder/'folder/'file, "i am a cow", createFolders = true)
-          assert(read(d/'folder/'folder/'file) == "i am a cow")
+          write(d/Symbol("folder")/Symbol("folder")/Symbol("file"), "i am a cow", createFolders = true)
+          assert(read(d/Symbol("folder")/Symbol("folder")/Symbol("file")) == "i am a cow")
         }
         test("binary"){
-          write(d/'file, Array[Byte](1, 2, 3, 4))
-          assert(read(d/'file).toSeq == Array[Byte](1, 2, 3, 4).toSeq)
+          write(d/Symbol("file"), Array[Byte](1, 2, 3, 4))
+          assert(read(d/Symbol("file")).toSeq == Array[Byte](1, 2, 3, 4).toSeq)
         }
         test("concatenating"){
-          write(d/'concat1, Seq("a", "b", "c"))
-          assert(read(d/'concat1) == "abc")
-          write(d/'concat2, Seq(Array[Byte](1, 2), Array[Byte](3, 4)))
-          assert(read.bytes(d/'concat2).toSeq == Array[Byte](1, 2, 3, 4).toSeq)
+          write(d/Symbol("concat1"), Seq("a", "b", "c"))
+          assert(read(d/Symbol("concat1")) == "abc")
+          write(d/Symbol("concat2"), Seq(Array[Byte](1, 2), Array[Byte](3, 4)))
+          assert(read.bytes(d/Symbol("concat2")).toSeq == Array[Byte](1, 2, 3, 4).toSeq)
         }
         test("writeAppend"){
           write.append(d/"append.txt", "Hello")
@@ -259,21 +259,21 @@ object OpTests extends TestSuite{
         }
       }
       test("Failures"){
-        val d = testPath/'failures
+        val d = testPath/Symbol("failures")
         mkdir! d
         test("nonexistant"){
-          test - intercept[nio.NoSuchFileException](ls! d/'nonexistent)
-          test - intercept[nio.NoSuchFileException](read! d/'nonexistent)
-          test - intercept[ResourceNotFoundException](read! resource/'failures/'nonexistent)
-          test - intercept[nio.NoSuchFileException](cp(d/'nonexistent, d/'yolo))
-          test - intercept[nio.NoSuchFileException](mv(d/'nonexistent, d/'yolo))
+          test - intercept[nio.NoSuchFileException](ls! d/Symbol("nonexistent"))
+          test - intercept[nio.NoSuchFileException](read! d/Symbol("nonexistent"))
+          test - intercept[ResourceNotFoundException](read! resource/Symbol("failures")/Symbol("nonexistent"))
+          test - intercept[nio.NoSuchFileException](cp(d/Symbol("nonexistent"), d/Symbol("yolo")))
+          test - intercept[nio.NoSuchFileException](mv(d/Symbol("nonexistent"), d/Symbol("yolo")))
         }
         test("collisions"){
-          mkdir! d/'folder
-          write(d/'file, "lolol")
-          test - intercept[nio.FileAlreadyExistsException](mv(d/'file, d/'folder))
-          test - intercept[nio.FileAlreadyExistsException](cp(d/'file, d/'folder))
-          test - intercept[nio.FileAlreadyExistsException](write(d/'file, "lols"))
+          mkdir! d/Symbol("folder")
+          write(d/Symbol("file"), "lolol")
+          test - intercept[nio.FileAlreadyExistsException](mv(d/Symbol("file"), d/Symbol("folder")))
+          test - intercept[nio.FileAlreadyExistsException](cp(d/Symbol("file"), d/Symbol("folder")))
+          test - intercept[nio.FileAlreadyExistsException](write(d/Symbol("file"), "lols"))
          }
       }
     }

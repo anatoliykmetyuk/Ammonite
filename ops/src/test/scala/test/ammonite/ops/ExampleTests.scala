@@ -12,7 +12,7 @@ object ExampleTests extends TestSuite{
       import ammonite.ops._
 
       // Let's pick our working directory
-      val wd: Path = pwd/'ops/'target/"scala-2.11"/"test-classes"/'example3
+      val wd: Path = pwd/Symbol("ops")/Symbol("target")/"scala-2.11"/"test-classes"/Symbol("example3")
 
       // And make sure it's empty
       rm! wd
@@ -22,7 +22,7 @@ object ExampleTests extends TestSuite{
       // You can write `Strings`, `Traversable[String]`s or `Array[Byte]`s
       write(wd/"file1.txt", "I am cow")
       write(wd/"file2.txt", Seq("I am cow\n", "hear me moo"))
-      write(wd/'file3, "I weigh twice as much as you".getBytes)
+      write(wd/Symbol("file3"), "I weigh twice as much as you".getBytes)
 
       // When reading, you can either `read!` a `String`, `read.lines!` to
       // get a `Vector[String]` or `read.bytes` to get an `Array[Byte]`
@@ -34,14 +34,14 @@ object ExampleTests extends TestSuite{
       // These operations are mirrored in `read.resource`,
       // `read.resource.lines` and `read.resource.bytes` to conveniently read
       // files from your classpath:
-      val resourcePath = resource/'test/'ammonite/'ops/'folder/"file.txt"
+      val resourcePath = resource/Symbol("test")/Symbol("ammonite")/Symbol("ops")/Symbol("folder")/"file.txt"
       read(resourcePath).length        ==> 18
       read.bytes(resourcePath).length  ==> 18
       read.lines(resourcePath).length  ==> 1
 
       // You can read resources relative to any particular class, including
       // the "current" class by passing in `getClass`
-      val relResourcePath = resource(getClass)/'folder/"file.txt"
+      val relResourcePath = resource(getClass)/Symbol("folder")/"file.txt"
       read(relResourcePath).length        ==> 18
       read.bytes(relResourcePath).length  ==> 18
       read.lines(relResourcePath).length  ==> 1
@@ -57,38 +57,38 @@ object ExampleTests extends TestSuite{
 
       // You can create folders through `mkdir!`. This behaves the same as
       // `mkdir -p` in Bash, and creates and parents necessary
-      val deep = wd/'this/'is/'very/'deep
+      val deep = wd/Symbol("this")/Symbol("is")/Symbol("very")/Symbol("deep")
       mkdir! deep
       // Writing to a file also creates necessary parents
-      write(deep/'deeeep/"file.txt", "I am cow", createFolders = true)
+      write(deep/Symbol("deeeep")/"file.txt", "I am cow", createFolders = true)
 
       // `ls` provides a listing of every direct child of the given folder.
       // Both files and folders are included
-      ls! wd    ==> Seq(wd/"file1.txt", wd/"file2.txt", wd/'file3, wd/'this)
+      ls! wd    ==> Seq(wd/"file1.txt", wd/"file2.txt", wd/Symbol("file3"), wd/Symbol("this"))
 
       // `ls.rec` does the same thing recursively
-      ls.rec! deep ==> Seq(deep/'deeeep, deep/'deeeep/"file.txt")
+      ls.rec! deep ==> Seq(deep/Symbol("deeeep"), deep/Symbol("deeeep")/"file.txt")
 
       // You can move files or folders with `mv` and remove them with `rm!`
-      ls! deep  ==> Seq(deep/'deeeep)
-      mv(deep/'deeeep, deep/'renamed_deeeep)
-      ls! deep  ==> Seq(deep/'renamed_deeeep)
+      ls! deep  ==> Seq(deep/Symbol("deeeep"))
+      mv(deep/Symbol("deeeep"), deep/Symbol("renamed_deeeep"))
+      ls! deep  ==> Seq(deep/Symbol("renamed_deeeep"))
 
       // `mv.into` lets you move a file into a
       // particular folder, rather than to particular path
-      mv.into(deep/'renamed_deeeep/"file.txt", deep)
-      ls! deep/'renamed_deeeep ==> Seq()
-      ls! deep  ==> Seq(deep/"file.txt", deep/'renamed_deeeep)
+      mv.into(deep/Symbol("renamed_deeeep")/"file.txt", deep)
+      ls! deep/Symbol("renamed_deeeep") ==> Seq()
+      ls! deep  ==> Seq(deep/"file.txt", deep/Symbol("renamed_deeeep"))
 
       // `mv.over` lets you move a file to a particular path, but
       // if something was there before it stomps over it
-      mv.over(deep/"file.txt", deep/'renamed_deeeep)
-      ls! deep  ==> Seq(deep/'renamed_deeeep)
-      read! deep/'renamed_deeeep ==> "I am cow" // contents from file.txt
+      mv.over(deep/"file.txt", deep/Symbol("renamed_deeeep"))
+      ls! deep  ==> Seq(deep/Symbol("renamed_deeeep"))
+      read! deep/Symbol("renamed_deeeep") ==> "I am cow" // contents from file.txt
 
       // `rm!` behaves the same as `rm -rf` in Bash, and deletes anything:
       // file, folder, even a folder filled with contents
-      rm! deep/'renamed_deeeep
+      rm! deep/Symbol("renamed_deeeep")
       rm! deep/"file.txt"
       ls! deep  ==> Seq()
 
@@ -109,20 +109,20 @@ object ExampleTests extends TestSuite{
 
       // Pick the directory you want to work with,
       // relative to the process working dir
-      val wd = pwd/'ops/'target/"scala-2.11"/"test-classes"/'example2
+      val wd = pwd/Symbol("ops")/Symbol("target")/"scala-2.11"/"test-classes"/Symbol("example2")
 
       // Delete a file or folder, if it exists
       rm! wd
 
       // Make a folder named "folder"
-      mkdir! wd/'folder
+      mkdir! wd/Symbol("folder")
 
       // Copy a file or folder to a particular path
-      cp(wd/'folder, wd/'folder1)
+      cp(wd/Symbol("folder"), wd/Symbol("folder1"))
       // Copy a file or folder *into* another folder at a particular path
       // There's also `cp.over` which copies it to a path and stomps over
       // anything that was there before.
-      cp.into(wd/'folder, wd/'folder1)
+      cp.into(wd/Symbol("folder"), wd/Symbol("folder1"))
 
 
       // List the current directory
@@ -130,33 +130,33 @@ object ExampleTests extends TestSuite{
 
       // Write to a file without pain! Necessary
       // enclosing directories are created automatically
-      write(wd/'dir2/"file1.scala", "package example\nclass Foo{}\n", createFolders = true)
-      write(wd/'dir2/"file2.scala", "package example\nclass Bar{}\n", createFolders = true)
+      write(wd/Symbol("dir2")/"file1.scala", "package example\nclass Foo{}\n", createFolders = true)
+      write(wd/Symbol("dir2")/"file2.scala", "package example\nclass Bar{}\n", createFolders = true)
 
       // Rename all .scala files inside the folder d into .java files
-      ls! wd/'dir2 | mv{case r"$x.scala" => s"$x.java"}
+      ls! wd/Symbol("dir2") | mv{case r"$x.scala" => s"$x.java"}
 
       // List files in a folder
-      val renamed = ls! wd/'dir2
+      val renamed = ls! wd/Symbol("dir2")
 
       // Line-count of all .java files recursively in wd
       val lineCount = ls.rec! wd |? (_.ext == "java") | read.lines | (_.size) sum
 
       // Find and concatenate all .java files directly in the working directory
-      mkdir(wd / 'target)
-      ls! wd/'dir2 |? (_.ext == "java") | read |> (write(wd/'target/"bundled.java", _))
+      mkdir(wd / Symbol("target"))
+      ls! wd/Symbol("dir2") |? (_.ext == "java") | read |> (write(wd/Symbol("target")/"bundled.java", _))
 
       assert(
-        listed == Seq(wd/'folder, wd/'folder1),
-        ls(wd/'folder1) == Seq(wd/'folder1/'folder),
+        listed == Seq(wd/Symbol("folder"), wd/Symbol("folder1")),
+        ls(wd/Symbol("folder1")) == Seq(wd/Symbol("folder1")/Symbol("folder")),
         lineCount == 4,
-        renamed == Seq(wd/'dir2/"file1.java", wd/'dir2/"file2.java"),
-        read(wd/'target/"bundled.java") ==
+        renamed == Seq(wd/Symbol("dir2")/"file1.java", wd/Symbol("dir2")/"file2.java"),
+        read(wd/Symbol("target")/"bundled.java") ==
         "package example\nclass Foo{}\npackage example\nclass Bar{}\n"
       )
 
 
-      write(wd/'py/"cow.scala", "Hello World", createFolders = true)
+      write(wd/Symbol("py")/"cow.scala", "Hello World", createFolders = true)
       write(wd/".file", "Hello")
       // Chains
 
@@ -181,8 +181,8 @@ object ExampleTests extends TestSuite{
       )
     }
     test("comparison"){
-      rm! pwd/'target/'folder/'thing/'file
-      write(pwd/'target/'folder/'thing/'file, "Hello!", createFolders = true)
+      rm! pwd/Symbol("target")/Symbol("folder")/Symbol("thing")/Symbol("file")
+      write(pwd/Symbol("target")/Symbol("folder")/Symbol("thing")/Symbol("file"), "Hello!", createFolders = true)
 
       def removeAll(path: String) = {
         def getRecursively(f: java.io.File): Seq[java.io.File] = {
@@ -197,12 +197,12 @@ object ExampleTests extends TestSuite{
       }
       removeAll("target/folder/thing")
 
-      assert(ls(pwd/'target/'folder).toSeq == Nil)
+      assert(ls(pwd/Symbol("target")/Symbol("folder")).toSeq == Nil)
 
-      write(pwd/'target/'folder/'thing/'file, "Hello!", createFolders = true)
+      write(pwd/Symbol("target")/Symbol("folder")/Symbol("thing")/Symbol("file"), "Hello!", createFolders = true)
 
-      rm! pwd/'target/'folder/'thing
-      assert(ls(pwd/'target/'folder).toSeq == Nil)
+      rm! pwd/Symbol("target")/Symbol("folder")/Symbol("thing")
+      assert(ls(pwd/Symbol("target")/Symbol("folder")).toSeq == Nil)
     }
 
     test("constructingPaths"){
@@ -212,10 +212,10 @@ object ExampleTests extends TestSuite{
       val wd = pwd
 
       // A path nested inside `wd`
-      wd/'folder/'file
+      wd/Symbol("folder")/Symbol("file")
 
       // A path starting from the root
-      root/'folder/'file
+      root/Symbol("folder")/Symbol("file")
 
       // A path with spaces or other special characters
       wd/"My Folder"/"My File.txt"
@@ -227,19 +227,19 @@ object ExampleTests extends TestSuite{
       wd/up/up
     }
     test("newPath"){
-      val target = pwd/'target
+      val target = pwd/Symbol("target")
     }
     test("relPaths"){
       // The path "folder/file"
-      val rel1 = 'folder/'file
-      val rel2 = 'folder/'file
+      val rel1 = Symbol("folder")/Symbol("file")
+      val rel2 = Symbol("folder")/Symbol("file")
 
       // The path "file"; will get converted to a RelPath by an implicit
-      val rel3 = 'file
+      val rel3 = Symbol("file")
 
       // The relative difference between two paths
-      val target = pwd/'target/'file
-      assert((target relativeTo pwd) == 'target/'file)
+      val target = pwd/Symbol("target")/Symbol("file")
+      assert((target relativeTo pwd) == Symbol("target")/Symbol("file"))
 
       // `up`s get resolved automatically
       val minus = pwd relativeTo target
@@ -250,25 +250,25 @@ object ExampleTests extends TestSuite{
       rel3: RelPath
     }
     test("relPathCombine"){
-      val target = pwd/'target/'file
+      val target = pwd/Symbol("target")/Symbol("file")
       val rel = target relativeTo pwd
-      val newBase = root/'code/'server
-      assert(newBase/rel == root/'code/'server/'target/'file)
+      val newBase = root/Symbol("code")/Symbol("server")
+      assert(newBase/rel == root/Symbol("code")/Symbol("server")/Symbol("target")/Symbol("file"))
     }
     test("relPathUp"){
-      val target = root/'target/'file
-      assert(target/up == root/'target)
+      val target = root/Symbol("target")/Symbol("file")
+      assert(target/up == root/Symbol("target"))
     }
     test("canonical"){if (Unix()){
 
-      assert((root/'folder/'file/up).toString == "/folder")
+      assert((root/Symbol("folder")/Symbol("file")/up).toString == "/folder")
       // not "/folder/file/.."
 
-      assert(('folder/'file/up).toString == "folder")
+      assert((Symbol("folder")/Symbol("file")/up).toString == "folder")
       // not "folder/file/.."
     }}
     test("findWc"){
-      val wd = pwd/'ops/'src/'test/'resources/'testdata
+      val wd = pwd/Symbol("ops")/Symbol("src")/Symbol("test")/Symbol("resources")/Symbol("testdata")
 
       // find . -name '*.txt' | xargs wc -l
       val lines = ls.rec(wd) |? (_.ext == "txt") | read.lines | (_.length) sum
@@ -281,7 +281,7 @@ object ExampleTests extends TestSuite{
     test("concatAll"){if (Unix()){
 
       ls.rec! pwd |? (_.ext == "scala") | read |> (
-        write(pwd/'target/'test/"omg.txt", _, createFolders = true)
+        write(pwd/Symbol("target")/Symbol("test")/"omg.txt", _, createFolders = true)
       )
     }}
 
