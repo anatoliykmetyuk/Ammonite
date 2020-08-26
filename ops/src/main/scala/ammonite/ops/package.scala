@@ -1,7 +1,7 @@
 package ammonite
 
 package object ops extends Extensions {
-  implicit val postfixOps = scala.language.postfixOps
+  implicit val postfixOps: scala.languageFeature.postfixOps = scala.language.postfixOps
   type ResourceNotFoundException = os.ResourceNotFoundException
   val ResourceNotFoundException = os.ResourceNotFoundException
 
@@ -92,7 +92,7 @@ package object ops extends Extensions {
     * To make them use the process's working directory for each subprocess
     */
   object ImplicitWd{
-    implicit lazy val implicitCwd = ops.pwd
+    implicit lazy val implicitCwd: Path = ops.pwd
   }
 
   /**

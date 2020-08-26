@@ -61,7 +61,7 @@ trait FilterMapExtConv {
    * e.g. Seq(1, 2, 3) |> Vector
    */
   implicit def SeqFactoryFunc[T, CC[X] <: Seq[X] with SeqOps[X, CC, CC[X]]]
-                             (s: SeqFactory[CC]) = {
+                             (s: SeqFactory[CC]): (Seq[T] => CC[T]) = {
     (t: Seq[T]) => s(t:_*)
   }
 
