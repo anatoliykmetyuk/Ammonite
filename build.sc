@@ -4,7 +4,7 @@ import $file.ci.upload
 
 import $ivy.`io.get-coursier::coursier-launcher:2.0.0-RC6-10`
 
-val dottyVersion = Option(sys.props("dottyVersion"))
+val dottyVersions = List("0.27.0-RC1") ++ Option(sys.props("dottyVersion"))
 
 val isMasterCommit =
   sys.env.get("TRAVIS_PULL_REQUEST") == Some("false") &&
@@ -143,7 +143,7 @@ trait AmmDependenciesResourceFileModule extends JavaModule{
   }
 }
 
-object ops extends Cross[OpsModule]((binCrossScalaVersions ++ dottyVersion):_*)
+object ops extends Cross[OpsModule]((binCrossScalaVersions ++ dottyVersions):_*)
 class OpsModule(val crossScalaVersion: String) extends AmmModule{
   def ivyDeps = Agg(ivy"com.lihaoyi::os-lib:0.7.1") ++ (
     if (crossScalaVersion.startsWith("2")) Agg(ivy"org.scala-lang.modules::scala-collection-compat:2.1.2")
