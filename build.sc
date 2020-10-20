@@ -157,7 +157,7 @@ class OpsModule(val crossScalaVersion: String) extends AmmModule{
         "-source:3.0-migration",
         "-rewrite",
         "-language:implicitConversions,postfixOps")
-    else res
+    else res ++ Seq("-language:postfixOps")
   }
   object test extends Tests
 }

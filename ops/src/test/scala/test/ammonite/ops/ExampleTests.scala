@@ -291,7 +291,7 @@ object ExampleTests extends TestSuite{
       // in `src_managed` folders.
 
       def longLines(p: Path) =
-        (p, read.lines(p).zipWithIndex |? (_._1.length > 100) | (_._2))
+        (p, read.lines(p).zipWithIndex |? (_._1.length > 200) | (_._2))
 
       val filesWithTooLongLines = (
         %%("git", "ls-files")(ammonite.ops.pwd).out.lines
