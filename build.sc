@@ -43,7 +43,10 @@ val bspVersion = "2.0.0-M6"
 trait AmmInternalModule extends mill.scalalib.CrossSbtModule{
   def artifactName = "ammonite-" + millOuterCtx.segments.parts.mkString("-").stripPrefix("amm-")
   def testFramework = "utest.runner.Framework"
-  def scalacOptions = Seq("-P:acyclic:force")
+  def scalacOptions =
+    if (crossScalaVersion.startsWith("2")) Seq("-P:acyclic:force")
+    else Nil
+
   def compileIvyDeps =
     if (crossScalaVersion.startsWith("2")) Agg(ivy"com.lihaoyi::acyclic:0.2.0")
     else Agg.empty[mill.scalalib.Dep]
@@ -176,16 +179,20 @@ class TerminalModule(val crossScalaVersion: String) extends AmmModule{
 }
 
 object amm extends Cross[MainModule](fullCrossScalaVersions:_*){
-  object util extends Cross[UtilModule](binCrossScalaVersions:_*)
+  object util extends Cross[UtilModule]((binCrossScalaVersions ++ dottyVersions):_*)
   class UtilModule(val crossScalaVersion: String) extends AmmModule{
     def moduleDeps = Seq(ops())
     def ivyDeps = Agg(
-      ivy"com.lihaoyi::pprint:0.5.9",
+      ivy"com.lihaoyi::pprint:0.6.0",
       ivy"com.lihaoyi::fansi:0.2.9",
     )
-    def compileIvyDeps = Agg(
-      ivy"org.scala-lang:scala-reflect:$crossScalaVersion"
-    )
+    def compileIvyDeps =
+      if (crossScalaVersion.startsWith("0")) Agg(
+        ivy"org.scala-lang:scala-reflect:2.13.3"
+      )
+      else Agg(
+        ivy"org.scala-lang:scala-reflect:$crossScalaVersion"
+      )
   }
 
   object runtime extends Cross[RuntimeModule](fullCrossScalaVersions:_*)

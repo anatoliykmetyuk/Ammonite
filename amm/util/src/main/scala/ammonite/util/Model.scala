@@ -229,7 +229,7 @@ object Colors{
 case class Bind[T](name: String, value: T)
                   (implicit val typeTag: scala.reflect.runtime.universe.TypeTag[T])
 object Bind{
-  implicit def ammoniteReplArrowBinder[T](t: (String, T))(implicit typeTag: TypeTag[T]) = {
+  implicit def ammoniteReplArrowBinder[T](t: (String, T))(implicit typeTag: TypeTag[T]): Bind[T] = {
     Bind(t._1, t._2)(typeTag)
   }
 }
