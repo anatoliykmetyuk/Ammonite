@@ -206,16 +206,23 @@ object amm extends Cross[MainModule](fullCrossScalaVersions:_*){
   }
 
   object interp extends Cross[InterpModule](fullCrossScalaVersions:_*){
-    object api extends Cross[InterpApiModule](fullCrossScalaVersions:_*)
+    object api extends Cross[InterpApiModule]((fullCrossScalaVersions ++ dottyVersions):_*)
     class InterpApiModule(val crossScalaVersion: String) extends AmmModule with AmmDependenciesResourceFileModule{
       def moduleDeps = Seq(ops(), amm.util())
       def crossFullScalaVersion = true
       def dependencyResourceFileName = "amm-interp-api-dependencies.txt"
-      def ivyDeps = Agg(
-        ivy"org.scala-lang:scala-compiler:$crossScalaVersion",
-        ivy"org.scala-lang:scala-reflect:$crossScalaVersion",
-        ivy"io.get-coursier:interface:0.0.21"
-      )
+      def ivyDeps =
+        if (crossScalaVersion.startsWith("2"))
+          Agg(
+            ivy"org.scala-lang:scala-compiler:$crossScalaVersion",
+            ivy"org.scala-lang:scala-reflect:$crossScalaVersion",
+            ivy"io.get-coursier:interface:0.0.21"
+          )
+        else
+          Agg(
+            ivy"org.scala-lang:scala-compiler:2.13.3",
+            ivy"io.get-coursier:interface:0.0.21"
+          )
     }
   }
   class InterpModule(val crossScalaVersion: String) extends AmmModule{
