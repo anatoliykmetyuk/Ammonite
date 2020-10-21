@@ -248,7 +248,7 @@ object amm extends Cross[MainModule](fullCrossScalaVersions:_*){
 
   object repl extends Cross[ReplModule](fullCrossScalaVersions:_*){
 
-    object api extends Cross[ReplApiModule](fullCrossScalaVersions:_*)
+    object api extends Cross[ReplApiModule]((fullCrossScalaVersions ++ dottyVersions):_*)
     class ReplApiModule(val crossScalaVersion: String) extends AmmModule with AmmDependenciesResourceFileModule{
       def crossFullScalaVersion = true
       def dependencyResourceFileName = "amm-dependencies.txt"
@@ -256,9 +256,13 @@ object amm extends Cross[MainModule](fullCrossScalaVersions:_*){
         ops(), amm.util(),
         interp.api()
       )
-      def ivyDeps = Agg(
-        ivy"com.github.scopt::scopt:3.7.1"
-      )
+      def ivyDeps =
+        if (crossScalaVersion.startsWith("2")) Agg(
+          ivy"com.github.scopt::scopt:3.7.1"
+        )
+        else Agg(
+          ivy"com.github.scopt:scopt_2.13:3.7.1"
+        )
 
       def generatedSources = T{
         Seq(PathRef(generateConstantsFile(buildVersion, bspVersion = bspVersion)))
