@@ -3,7 +3,7 @@ package ammonite.repl.tools
 import ammonite.repl.api.Location
 import ammonite.runtime.tools.browse.Strings
 import ammonite.util.CodeColors
-import sourcecode.Compat._
+import ownerUtil._
 
 import scala.annotation.tailrec
 import scala.language.experimental.macros

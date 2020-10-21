@@ -120,7 +120,7 @@ trait ReplAPI {
 
   val pprinter: Ref[pprint.PPrinter]
 
-  implicit def pprinterImplicit = pprinter()
+  implicit def pprinterImplicit: pprint.PPrinter = pprinter()
 
   /**
    * Current width of the terminal
