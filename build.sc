@@ -195,7 +195,7 @@ object amm extends Cross[MainModule](fullCrossScalaVersions:_*){
       )
   }
 
-  object runtime extends Cross[RuntimeModule](fullCrossScalaVersions:_*)
+  object runtime extends Cross[RuntimeModule]((fullCrossScalaVersions ++ dottyVersions):_*)
   class RuntimeModule(val crossScalaVersion: String) extends AmmModule{
     def moduleDeps = Seq(ops(), amm.util(), interp.api(), amm.repl.api())
     def crossFullScalaVersion = true
